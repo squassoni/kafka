@@ -1,0 +1,41 @@
+# SETUP topics
+kafka-topics --zookeeper 127.0.0.1:2181 --list 
+
+kafka-topics --zookeeper 127.0.0.1:2181 --topic first_topic --create --partitions 3 --replication-factor 1
+
+kafka-topics --zookeeper 127.0.0.1:2181 --topic first_topic --describe
+
+kafka-topics --zookeeper 127.0.0.1:2181 --topic first_topic --delete
+
+
+# producing
+kafka-console-producer --broker-list 127.0.0.1:9092 --topic first_topic 
+
+# producing with properties
+kafka-console-producer --broker-list 127.0.0.1:9092 --topic first_topic --producer-property acks=all
+
+
+# consuming
+kafka-console-consumer --bootstrap-server 127.0.0.1:9092 --topic first_topic
+
+# consuming from beginning
+kafka-console-consumer --bootstrap-server 127.0.0.1:9092 --topic first_topic --from-beginning
+
+# start one consumer
+kafka-console-consumer --bootstrap-server 127.0.0.1:9092 --topic first_topic --group my-first-application
+
+
+# list consumer groups
+kafka-consumer-groups --bootstrap-server localhost:9092 --list
+ 
+# describe the group now
+kafka-consumer-groups --bootstrap-server localhost:9092 --describe --group my-first-application
+
+
+# reset the offsets to the beginning of each partition
+kafka-consumer-groups --bootstrap-server localhost:9092 --group my-first-application --reset-offsets --to-earliest --execute --topic first_topic
+
+# shift offsets by 2 (backward) as another strategy
+kafka-consumer-groups --bootstrap-server localhost:9092 --group my-first-application --reset-offsets --shift-by -2 --execute --topic first_topic
+
+
