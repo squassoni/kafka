@@ -39,3 +39,8 @@ kafka-consumer-groups --bootstrap-server localhost:9092 --group my-first-applica
 kafka-consumer-groups --bootstrap-server localhost:9092 --group my-first-application --reset-offsets --shift-by -2 --execute --topic first_topic
 
 
+# producer with keys
+kafka-console-producer --broker-list 127.0.0.1:9092 --topic employee-salary --property parse.key=true --property key.separator=,
+
+# consumer with keys
+kafka-console-consumer --bootstrap-server 127.0.0.1:9092 --topic employee-salary --from-beginning --property print.key=true --property key.separator=,
