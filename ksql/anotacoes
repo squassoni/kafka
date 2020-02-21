@@ -1,0 +1,64 @@
+KSQL - course
+
+Writing Kafka Streams Java applications could be complex. Sometimes, you junt want to write... SQL... 
+Underneath, Kafka Streams applications are generated
+
+Streaming SQL Engine for Apache Kafka
+
+ksql
+list topics;
+show topics;
+print 'nomedotopico';
+print 'nomedotopico' from beginning;
+print 'nomedotopico' from beginning limit 2;
+print 'nomedotopico' from beginning interval 2 limit 2;
+
+
+## First Stream
+create stream users_stream (name VARCHAR, countrycode VARCHAR) WITH (KAFKA_TOPIC='USERS', VALUE_FORMAT='DELIMITED');
+list streams;
+show streams;
+select name, countrycode from users_stream emit changes;
+SET 'auto.offset.reset'='earliest';
+select name, countrycode from users_stream emit changes limit 4;
+
+# With aggregate
+select countrycode, count(*) from users_streams group by countrycode;
+
+# Drop
+drop stream if exists users_stream delete topic;
+
+# Stream with Json
+{"userid":1000, "firstname":"Alison","lastname":"Smith","countrycode":"GB","rating":4.7}
+create stream usersprofile (userid INT, firstname VARCHAR, lastname VARCHAR, countrycode VARCHAR, rating DOUBLE) WITH (KAFKA_TOPIC='USERPROFILE', VALUE_FORMAT='JSON');
+describe userprofile;
+
+# KSQL Datagen
+ksql-datagen schema=userprofile.avro format=json topic=USERPROFILE key=userid masInterval=5000 iterations=100
+
+SELECT TIMESTAMPTOSTRING(rowtime, 'dd/MMM HH:mm') as createtime, firstname from userprofile;
+
+SELECT TIMESTAMPTOSTRING(rowtime, 'dd/MMM HH:mm') as createtime, firstname || ' ' || ucase(lastname) as full_name from userprofile;
+
+## First Table
+Streams form streams using CASE statment
+arquivo user_profile_pretty.ksql
+
+run script './user_profile_pretty.ksql';
+describe extended user_profile_pretty;
+select description from user_profile_pretty;
+
+terminate query nomedaquery;
+drop stream user_profile_pretty;
+
+A table in Kafka is the state "now"
+
+## Update a Table
+
+CREATE TABLE COUNTRYTABLE (countrycode VARCHAR, countryname VARCHAR) WITH (KAFKA_TOPIC='COUNTRY-CSV', VALUE_FORMAT='DELIMITED', KEY ='countrycode');
+
+show table
+describe extended table
+
+## Joins
+select up.firstname, up.lastname, up.countrycode, ct.countryname from USERPROFILE up left join COUNTRYTABLE ct on ct.countrycode=up.countrycode;
