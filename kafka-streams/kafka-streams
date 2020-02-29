@@ -12,3 +12,44 @@ Kafka Streams
 	A topology is a graph of processors chained together by streams
 
 
+
+Umas das principais diferencas das ferramentas tradicionais de mensageria para o Apache Kafka é a utilizacao de Kafka 
+
+Streaming SQL Engine for Apache Kafka
+
+Confluent ksqlDB has become an increasingly popular stream processing framework built upon Kafka Streams. It enables developers to write real-time stream processing applications with the ease of SQL. 
+
+
+
+A stream is a sequence of immutable data records, that fully ordered, can be replayed, and is fault tolerant. 
+In the Apache Kafka we can easily data transformations, enrichment, fraud detection using Kafka Streams when producing messages in a topic.
+And with KSQL It enables developers to write real-time stream processing applications with the ease of SQL.
+
+---
+Version 2
+A stream is a sequence of immutable data records, that fully ordered, can be replayed, and is fault tolerant. 
+In the Apache Kafka we can easily data transformations, enrichment, fraud detection using Kafka Streams when producing messages in a topic.
+And with KSQL enables developers to write real-time stream processing applications with the ease of SQL.
+
+---
+Version 3
+A stream is a sequence of immutable data records, that fully ordered, can be replayed, and is fault tolerant. 
+In the Apache Kafka we can easily data transformations, enrichment, fraud detection using Kafka Streams when producing messages in a topic.
+And with KSQL we can to write real-time stream processing applications with the ease of SQL.
+
+---
+Version 4
+A stream is a sequence of immutable data records, that fully ordered, can be replayed, and is fault tolerant. 
+In Apache Kafka we can easily data transformations, enrichment, fraud detection using Kafka Streams and with KSQL we can write real-time stream processing applications with the ease of SQL.
+
+---
+A stream is a sequence of immutable data records, which are fully ordered, reproducible and fault tolerant.
+At Apache Kafka, we can easily transform data, enrich, detect fraud using Kafka Streams and, with KSQL, we can write real-time flow processing applications with the ease of SQL.
+
+---
+Version 6
+A stream is a sequence of immutable data records, that fully ordered, can be replayed, and is fault tolerant. 
+In Apache Kafka, we can easily transform data, enrich, detect fraud using Kafka Streams and, with KSQL, we can write real-time stream processing applications with the ease of SQL.
+
+
+
