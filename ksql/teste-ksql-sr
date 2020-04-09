@@ -1,0 +1,12 @@
+kafka-avro-console-producer --broker-list broker:29092 --topic squad-pub-sub --property value.schema='{"type":"record","name":"myrecord","fields":[{"name":"integrante","type":"string"},{"name":"idade","type":"int"},{"name":"estado","type":"string"},{"name":"cargo","type":"string"}]}'
+{"integrante":"bruno","idade":24,"estado":"sao paulo","cargo":"pleno"}
+
+--------------------
+
+select * from STREAM_PUBSUB emit changes;
+
+CREATE STREAM stream_pubsub
+>  WITH (KAFKA_TOPIC='squad-pub-sub',
+>        VALUE_FORMAT='AVRO');
+
+PRINT 'squad-pub-sub' FROM BEGINNING;
