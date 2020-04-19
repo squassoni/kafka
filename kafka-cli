@@ -44,3 +44,12 @@ kafka-console-producer --broker-list 127.0.0.1:9092 --topic employee-salary --pr
 
 # consumer with keys
 kafka-console-consumer --bootstrap-server 127.0.0.1:9092 --topic employee-salary --from-beginning --property print.key=true --property key.separator=,
+
+# add quotas for client-id and user
+kafka-configs  --zookeeper localhost:2181 --alter --add-config 'producer_byte_rate=10,consumer_byte_rate=20' --entity-name clientA --entity-type clients --entity-name user2 --entity-type users
+
+# add quotas for user
+kafka-configs  --zookeeper localhost:2181 --alter --add-config 'producer_byte_rate=1024,consumer_byte_rate=2048' --entity-name user1 --entity-type users
+
+# add quotas for client-id
+kafka-configs  --zookeeper localhost:2181 --alter --add-config 'producer_byte_rate=1024,consumer_byte_rate=2048' --entity-name clientA --entity-type clients
