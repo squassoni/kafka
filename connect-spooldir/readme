@@ -1,0 +1,32 @@
+Executando connect standalone:
+#connect-standalone connect-standalone.properties spooldir.properties
+
+----------------------
+
+Consumindo com Json:
+#kafka-console-consumer --bootstrap-server broker:9092 --topic spooldir-testing-topic --from-beginning
+
+Consumindo com Avro:
+#kafka-avro-console-consumer --bootstrap-server broker:9092 --topic spooldir-testing-topic --from-beginning
+
+----------------------
+
+Baixando .csv de exemplo:
+#curl "https://api.mockaroo.com/api/58605010?count=1000&key=25fd9c80" > "data/csv-spooldir-source.csv"
+
+----------------------
+
+Restartando task do connector
+#curl -X POST localhost:8083/connectors/CsvSchemaSpoolDir/tasks/0/restart
+
+Status do connector
+#curl localhost:8083/connectors/CsvSchemaSpoolDir/status | jq .
+
+----------------------
+
+Offset consumido com Avro:
+{"id":1000,"first_name":{"string":"Noby"},"last_name":{"string":"McGready"},"email":{"string":"nmcgreadyrr@nymag.com"},"gender":{"string":"Male"},"ip_address":{"string":"151.25.99.71"},"last_login":{"string":"2019-01-10T06:06:31Z"},"account_balance":{"bytes":"\u0012õ\u0005"},"country":{"string":"PL"},"favorite_color":{"string":"#e4b5e7"}}
+
+Offset consumido com Json:
+{"schema":{"type":"struct","fields":[{"type":"int64","optional":false,"field":"id"},{"type":"string","optional":true,"field":"first_name"},{"type":"string","optional":true,"field":"last_name"},{"type":"string","optional":true,"field":"email"},{"type":"string","optional":true,"field":"gender"},{"type":"string","optional":true,"field":"ip_address"},{"type":"string","optional":true,"field":"last_login"},{"type":"bytes","optional":true,"name":"org.apache.kafka.connect.data.Decimal","version":1,"parameters":{"scale":"2"},"field":"account_balance"},{"type":"string","optional":true,"field":"country"},{"type":"string","optional":true,"field":"favorite_color"}],"optional":false,"name":"com.example.users.User"},"payload":{"id":1,"first_name":"Hart","last_name":"Whalley","email":"hwhalley0@adobe.com","gender":"Male","ip_address":"210.14.56.86","last_login":"2014-10-31T21:44:16Z","account_balance":"F1pw","country":"VE","favorite_color":"#ce6809"}}
+

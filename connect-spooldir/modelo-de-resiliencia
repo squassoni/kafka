@@ -1,0 +1,155 @@
+O Modelo de Resiliência abaixo foi baseado no connector SpoolDirCsvSource
+
+    #connector.class=com.github.jcustenborder.kafka.connect.spooldir.SpoolDirCsvSourceConnector
+
+Nas Configuracoes do connector define-se 3 diretórios: 
+
+    #input.path: Armazena arquivos .csv que devem ser lidos pelo connector.
+
+    #error.path: Se acontecer qualquer tipo de erro na leitura o connector move o arquivo .csv para esse diretório.
+
+    #finished.path: Se a leitura ocorrer com sucesso o connector move o arquivo .csv para esse diretório.
+
+Ainda nas Configuracoes do connector, é necessário definir key/value schema que deverá ser realizado o parse dos arquivos.
+
+    Exemplo de CSV com as seguintes colunas:
+    id, first_name, last_name, email, gender, ip_address, last_login, account_balance, country, favorite_color
+
+    Logo, 
+    key.schema = {
+                    "name" : "com.example.users.UserKey",
+                    "type" : "STRUCT",
+                    "isOptional" : false,
+                    "fieldSchemas" : {
+                        "id" : {
+                        "type" : "INT64",
+                        "isOptional" : false
+                        }
+                    }
+                }
+    
+    value.schema = {
+                        "name" : "com.example.users.User",
+                        "type" : "STRUCT",
+                        "isOptional" : false,
+                        "fieldSchemas" : {
+                            "id" : {
+                            "type" : "INT64",
+                            "isOptional" : false
+                            },
+                            "first_name" : {
+                            "type" : "STRING",
+                            "isOptional" : true
+                            },
+                            "last_name" : {
+                            "type" : "STRING",
+                            "isOptional" : true
+                            },
+                            "email" : {
+                            "type" : "STRING",
+                            "isOptional" : true
+                            },
+                            "gender" : {
+                            "type" : "STRING",
+                            "isOptional" : true
+                            },
+                            "ip_address" : {
+                            "type" : "STRING",
+                            "isOptional" : true
+                            },
+                            "last_login" : {
+                            "type" : "STRING",
+                            "isOptional" : true
+                            },
+                            "account_balance" : {
+                            "name" : "org.apache.kafka.connect.data.Decimal",
+                            "type" : "BYTES",
+                            "version" : 1,
+                            "parameters" : {
+                                "scale" : "2"
+                            },
+                            "isOptional" : true
+                            },
+                            "country" : {
+                            "type" : "STRING",
+                            "isOptional" : true
+                            },
+                            "favorite_color" : {
+                            "type" : "STRING",
+                            "isOptional" : true
+                            }
+                        }
+                    }
+
+Outras configuracoes importantes que devem ser configuradas:
+    #name: Nome do connector
+    #tasks.max: Número de tasks
+    #topic: Nome do tópico
+    #csv.first.row.as.header: Se true, defini a primeira linha como cabecalho.
+    #halt.on.error: Se true, define que a task deve ser interrompida se encontrar algum erro no .csv
+
+    Mais configuracoes: https://docs.confluent.io/current/connect/kafka-connect-spooldir/index.html#spooldir-connector
+
+Se o consumidor for ler os offsets em Json, o parse key/value do Worker devem ser definidos como Json:
+    #key.converter=org.apache.kafka.connect.json.JsonConverter
+    #value.converter=org.apache.kafka.connect.json.JsonConverter
+
+Se o consumidor for ler os offsets em Avro, o o parse key/value do Worker devem ser definidos como Avro:
+    #key.converter=io.confluent.connect.avro.AvroConverter
+    #key.converter.schema.registry.url=http://schema-registry:8081
+    #value.converter=io.confluent.connect.avro.AvroConverter
+    #value.converter.schema.registry.url=http://schema-registry:8081
+    #internal.key.converter=org.apache.kafka.connect.json.JsonConverter
+    #internal.value.converter=org.apache.kafka.connect.json.JsonConverter
+    #internal.key.converter.schemas.enable=false
+    #internal.value.converter.schemas.enable=false
+
+Testes realizados:
+
+    1) Tentar ler o mesmo arquivo .csv (mesmo nome).
+    - O connector processo os registros, move para #finished.path, mas não commita os offests.
+
+    2) Tentar ler o mesmo arquivo .csv (nome diferente).
+    - O connector processo os registros, move para #finished.path, e commita os offests.
+	
+    3) Campo com formato diferente do definido no value.schema (ex: Id como string).
+    - O connector toma erro na linha, para o processo, e move o arquivo para #error.path.
+        "Exception thrown while parsing data for 'id'. linenumber=2 
+        Caused by: org.apache.kafka.connect.errors.DataException: Could not parse 'aaa' to 'Long'"
+    
+    4) Linha com um campo a mais do definido no value.schema (Add ",24")
+        ex: 1,Avigdor,Mithan,amithan0@skype.com,Male,170.151.216.193,2015-09-07T16:01:00Z,2900.37,PL,#50dcd6,24
+
+    - O connector ignora ",24" e processa todos os registros normalmente.
+
+    5) Linha com um campo a menos do definido no value.schema (Remove ",#50dcd6")
+        ex: 1,Avigdor,Mithan,amithan0@skype.com,Male,170.151.216.193,2015-09-07T16:01:00Z,2900.37,PL
+
+    - O connector toma erro "java.lang.ArrayIndexOutOfBoundsException: 9" e para de processar o arquivo.
+
+    6) Header com um campo a mais do definido no value.schema (Add "age")
+
+    - O connector toma erro "java.lang.ArrayIndexOutOfBoundsException: 10" e para de processar o arquivo.
+
+    7) Header com um campo a menos do definido no value.schema (Remove "favorite_color")
+
+    - O connector processa o arquivo normal, pois o campo favorite_color foi definido como opcional no value.schema ("isOptional" : true).
+    Logo o consumer vai ler como nulo os campos, mesmo que preenchido ("favorite_color":null).
+
+    8) Header com um campo obrigatório a menos do definido no value.schema (Remove "id,")
+    first_name,last_name,email,gender,ip_address,last_login,account_balance,country,favorite_color
+    - O connector toma erro, e nao processa o arquivo "Exception tnhrown while parsing data for 'account_balance'"
+
+    9) Header com um campo obrigatório a menos do definido no value.schema (Remove "id")
+    ,first_name,last_name,email,gender,ip_address,last_login,account_balance,country,favorite_color
+    - O connector toma erro "Tolerace exceeded in error handler", e a task falha, necessitando restart manual.
+
+    10) Configuracao "csv.first.row.as.header=true" mas o arquivo .csv sem cabecalho
+    - O connector toma erro "Tolerance exceeded in error handler", e a task falha, necessitando restart manual.
+
+    11) Espaco do lado do campo no Header (", first_name,")
+    id, first_name,last_name,email,gender,ip_address,last_login,account_balance,country,favorite_color
+    - O connector vai ignorar todas as linhas dessa coluna e setar como nulo "first_name":null
+    A propriedade pode ser modificada setando "csv.ignore.leading.whitespace".
+    
+    
