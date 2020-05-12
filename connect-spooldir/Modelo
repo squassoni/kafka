@@ -37,3 +37,22 @@ O Modelo de Resiliência abaixo foi baseado no connector SpoolDirCsvSource no mo
       
       Importante utilizar a propriedade #halt.on.error, se true, define que a task deve ser interrompida se encontrar algum erro
       no arquivos listados no input.path.
+      
+  - Procedimento em caso de Failover
+  
+  - Procedimento em caso de Failback
+  
+  - Como ler as metricas do Connect Spoodir
+      Assim como é realizado a monitoracao de outros connectores, para o Spoodir deve-se instrumentar metricas JMX atraves de 
+      um agente prometheus definido no servico do Connect. 
+      Dessa forma, é possivel utilizar o Grafana para definicao de dashboards e criacao de alertas com AlertManager.
+   
+  - Como deve ser instrumentado o server para que os logs do Connect estejam disponiveis no Splunk.
+      Assim como é relaizado a instrumentacao de logs de outros connectores para o Splunk, deve definir um diretorio padrao
+      no properties do log4j para a gravacao de logs do Connect. 
+      
+      Exemplo: LOG_DIR=/opt/apl/connect/logs
+      
+      Dessa forma será necessário abrir um chamado para o time responsável executar as configuracoes no splunk.
+      Preencher com o diretorio onde os logs serao gravados e definir um nome para o index (exemplo: raw_kafka_connect_spooldir).
+      
