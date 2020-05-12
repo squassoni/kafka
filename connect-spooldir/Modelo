@@ -48,7 +48,7 @@ O Modelo de Resiliência abaixo foi baseado no connector SpoolDirCsvSource no mo
       Dessa forma, é possivel utilizar o Grafana para definicao de dashboards e criacao de alertas com AlertManager.
    
   - Como deve ser instrumentado o server para que os logs do Connect estejam disponiveis no Splunk.
-      Assim como é relaizado a instrumentacao de logs de outros connectores para o Splunk, deve definir um diretorio padrao
+      Assim como é realizado na instrumentacao de logs de outros connectores para o Splunk, deve definir um diretorio padrao
       no properties do log4j para a gravacao de logs do Connect. 
       
       Exemplo: LOG_DIR=/opt/apl/connect/logs
