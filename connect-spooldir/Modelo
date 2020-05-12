@@ -1,0 +1,24 @@
+
+O Modelo de Resiliência abaixo foi baseado no connector SpoolDirCsvSource no modo standalone.
+
+  #connector.class=com.github.jcustenborder.kafka.connect.spooldir.SpoolDirCsvSourceConnector
+  
+  O connector SpoolDir é do tipo source, fornece a capacidade de monitorar um diretório para arquivos e ler os dados à
+  medida que novos arquivos são gravados no diretório de entrada. Cada registro no arquivo de entrada será convertido 
+  para uma schema fornecido pelo usuário ou pode ser gerado automaticamente.
+  
+  Sua estrutura é basicamente estruturada apartir de 3 diretórios:
+    #input.path: Armazena arquivos .csv que devem ser lidos pelo connector.
+    #error.path: Se acontecer qualquer tipo de erro na leitura o connector move o arquivo para esse diretório.
+    #finished.path: Se a leitura ocorrer com sucesso o connector move o arquivo para esse diretório.
+
+
+- Garantir o High Availability da solucao produtiva
+    Para garantir a alta disponinibilidade em producao da solucao, é recomendado pela propria Confluent, que o Worker do connector,
+    no caso o Kafka Connect, esteja no modo distribuido. Se um nó sair inesperadamente do cluster, o Connect distribuirá automaticamente 
+    o trabalho desse nó para outros nós do cluster. E, como o Worker armazena configurações, status e informações de offset do conector no 
+    cluster Kafka onde é replicado com segurança, a perda de um servidor em que um Worker é executado não resulta em perda de dados.
+    
+    O modo standalone é útil para o desenvolvimento e teste do connector em uma máquina local, tanto é que os offsets sao armazenados
+    na maquina do proprio Connect, definido na configuracao abaixo.
+    #offset.storage.file.filename=/home/bruno/Documentos/connect-spooldir/connect.offsets
