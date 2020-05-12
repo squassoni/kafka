@@ -13,12 +13,27 @@ O Modelo de Resiliência abaixo foi baseado no connector SpoolDirCsvSource no mo
     #finished.path: Se a leitura ocorrer com sucesso o connector move o arquivo para esse diretório.
 
 
-- Garantir o High Availability da solucao produtiva
+- Garantir o High Availability da solucao produtiva.
     Para garantir a alta disponinibilidade em producao da solucao, é recomendado pela propria Confluent, que o Worker do connector,
     no caso o Kafka Connect, esteja no modo distribuido. Se um nó sair inesperadamente do cluster, o Connect distribuirá automaticamente 
-    o trabalho desse nó para outros nós do cluster. E, como o Worker armazena configurações, status e informações de offset do conector no 
-    cluster Kafka onde é replicado com segurança, a perda de um servidor em que um Worker é executado não resulta em perda de dados.
+    o trabalho desse nó para outros nós do cluster. E, como o Worker armazena configurações, status e informações de offset do conector 
+    no cluster Kafka onde é replicado com segurança, a perda de um servidor em que um Worker é executado não resulta em perda de dados.
     
     O modo standalone é útil para o desenvolvimento e teste do connector em uma máquina local, tanto é que os offsets sao armazenados
     na maquina do proprio Connect, definido na configuracao abaixo.
     #offset.storage.file.filename=/home/bruno/Documentos/connect-spooldir/connect.offsets
+ 
+ - Garantir que em caso de falhas de um connect tenhamos um procedimento para ativar outro connect.
+      Caso haja falhas no servico do Connect e a única solucao for subir outro, alguns procedimentos devem ser seguidos:
+      1) Garantir que o mesmo diretorio de offsets seja definido na configuracao offset.storage.file.filename;
+      2) Garantir que a mesma classes de conversao de dados sejam definidas nas configuracoes de key.converter e value.converter;
+      3) Verificar a existencia de arquivos na pasta error.path, se sim mover para a pasta de input.path para reiniciar o processamento
+      do arquivo.
+
+  - A ativacao de um Connect de preferencia deve evitar a releitura de registros para impedir duplicidade.
+      Se um novo Connect for ativado por motivos de falhas de um anterior, deve-se manter as mesmas configuracoes do connector
+      (nome do connector, nome do tópico) por padrao nao havera releitura de registros, com isso impedindo duplicidades.
+      Observacao: Garantir a execucao dos procedimentos listados acima.
+      
+      Importante utilizar a propriedade #halt.on.error, se true, define que a task deve ser interrompida se encontrar algum erro
+      no arquivos listados no input.path.
