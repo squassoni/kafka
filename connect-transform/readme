@@ -1,0 +1,17 @@
+## Primeira poc realizada com o SMT (Simple Message Transform) do Kafka Connect.
+
+## Objetivo do transform FirstTransform:
+- Formar uma nova string de acordo com o tamanho definido nas configuracoes do connector.
+
+## Connector utilizado:
+- Kafka Connect HTTP Sink
+
+## Exemplo de configuracao do transform no connector:
+  "transforms": "FirstTransform",
+  "transforms.FirstTransform.type": "br.com.squassoni.connect.parser.FirstTransform$Value",
+  "transforms.FirstTransform.parser": "5"
+
+## Documentacoes utilizadas:
+- https://docs.confluent.io/current/connect/transforms/custom.html#custom-transform
+- https://docs.confluent.io/current/connect/transforms/custom.html#custom-transform
+- https://github.com/apache/kafka/blob/trunk/connect/transforms/src/main/java/org/apache/kafka/connect/transforms/ReplaceField.java
