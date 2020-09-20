@@ -1,0 +1,9 @@
+#connect-standalone connect-standalone.properties http.properties
+
+#kafka-consumer-groups --bootstrap-server broker:9092 --describe --group connect-MyHttpSinkConnector
+
+#kafka-consumer-groups --bootstrap-server broker:9092 --reset-offsets --to-latest --group connect-MyHttpSinkConnector --topic mytopic-parser --execute
+
+#curl -X PUT localhost:8083/connectors/MyHttpSinkConnector/config -H 'Content-type: application/json' -d @http-config.json
+
+#kafka-console-producer --bootstrap-server broker:9092 --topic mytopic-parser
